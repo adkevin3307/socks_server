@@ -7,7 +7,7 @@ OBJS = $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))
 
 CXXFLAGS = -std=c++17 -I./include -Wall -O2
 
-LIBS =
+LIBS = -lpthread -lboost_system -lboost_filesystem
 
 all: create_object_directory $(EXE)
 	@echo Compile Success
