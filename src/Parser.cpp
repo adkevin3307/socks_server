@@ -27,19 +27,19 @@ Parser::~Parser()
 {
 }
 
-boost::optional<Request> Parser::parse(string s)
+boost::optional<Request> Parser::parse(vector<uint8_t> buffer, size_t bytes)
 {
     Request request;
 
-    if (s.length() < 9) return boost::none;
+    if (bytes < 9) return boost::none;
 
-    request.version_number = s[0];
+    request.version_number = buffer[0];
     if (request.version_number != 4) return boost::none;
 
-    if (s[1] == 1) {
+    if (buffer[1] == 1) {
         request.code = CONSTANT::SOCKS_TYPE::CONNECT;
     }
-    else if (s[1] == 2) {
+    else if (buffer[1] == 2) {
         request.code = CONSTANT::SOCKS_TYPE::BIND;
     }
     else {
@@ -50,21 +50,23 @@ boost::optional<Request> Parser::parse(string s)
 
     size_t index;
     for (index = 2; index < 4; index++) {
-        request.port = ((request.port << 8) | s[index]);
+        request.port = ((request.port << 8) | buffer[index]);
     }
 
     for (index = 4; index < 8; index++) {
-        request.ip = ((request.ip << 8) | s[index]);
+        request.ip = ((request.ip << 8) | buffer[index]);
     }
 
-    for (index = 8; index < s.length() && s[index] != 0; index++) {
-        request.user_id += s[index];
+    for (index = 8; index < bytes && buffer[index] != 0; index++) {
+        request.user_id += (char)buffer[index];
     }
 
-    if (request.ip > 0 && request.ip <= numeric_limits<uint8_t>::max() && index + 1 < s.length()) {
+    if (request.ip > 0 && request.ip <= numeric_limits<uint8_t>::max() && index + 1 < bytes) {
         request.mode = CONSTANT::SOCKS_MODE::SOCKS4A;
 
-        request.domain_name = s.substr(index + 1, s.length() - 1);
+        for (index = 9; index < bytes && buffer[index] != 0; index++) {
+            request.domain_name += (char)buffer[index];
+        }
     }
 
     return request;

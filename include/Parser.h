@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <boost/optional.hpp>
 
 #include "constant.h"
@@ -25,5 +26,5 @@ public:
     Parser();
     ~Parser();
 
-    static boost::optional<Request> parse(string s);
+    static boost::optional<Request> parse(vector<uint8_t> buffer, size_t bytes);
 };
