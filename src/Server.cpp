@@ -19,6 +19,8 @@ Server::Server(shared_ptr<boost::asio::io_context> io_context, int port)
 
 Server::~Server()
 {
+    this->sessions.clear();
+    this->sessions.shrink_to_fit();
 }
 
 void Server::do_wait()
