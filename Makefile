@@ -1,9 +1,11 @@
-EXE = socks_server
+EXE = socks_server hw4.cgi
 OBJ_DIR = obj
 
-SOURCES = $(wildcard src/*.cpp)
+SOURCES_SOCKS = $(wildcard src/*.cpp)
+SOURCES_CGI = $(wildcard src/console_cgi/*.cpp)
 
-OBJS = $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
+OBJS_SOCKS = $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES_SOCKS)))))
+OBJS_CGI = $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES_CGI)))))
 
 CXXFLAGS = -std=c++17 -I./include -Wall -O2
 
@@ -18,7 +20,13 @@ create_object_directory:
 $(OBJ_DIR)/%.o: src/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-$(EXE): $(OBJS)
+$(OBJ_DIR)/%.o: src/console_cgi/%.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+socks_server: $(OBJS_SOCKS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
+
+hw4.cgi: $(OBJS_CGI)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 clean:

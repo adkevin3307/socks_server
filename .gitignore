@@ -1,3 +1,4 @@
 obj/
 bin/
 /socks_server
+*.cgi
