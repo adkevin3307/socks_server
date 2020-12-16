@@ -9,7 +9,7 @@ using namespace std;
 class ClientSession : public enable_shared_from_this<ClientSession> {
 private:
     int index;
-    string id, host, port, filename;
+    string id, host, port, filename, socks_host, socks_port;
     vector<string> commands;
     vector<char> _buffer;
     boost::asio::ip::tcp::socket _socket;
@@ -25,4 +25,5 @@ public:
     ~ClientSession();
 
     void start();
+    void start(string socks_host, string socks_port);
 };

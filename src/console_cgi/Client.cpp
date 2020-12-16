@@ -25,14 +25,6 @@ Client::Client(shared_ptr<boost::asio::io_context> io_context)
     this->execute_sessions();
 }
 
-Client::Client(shared_ptr<boost::asio::io_context> io_context, string query)
-{
-    this->_io_context = shared_ptr<boost::asio::io_context>(io_context);
-
-    this->keys = vector<string>{ "h", "p", "f" };
-    this->information = QueryParser::parse(query);
-}
-
 Client::~Client()
 {
 }
