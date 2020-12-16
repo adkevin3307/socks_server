@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "constant.h"
+#include "Firewall.h"
 
 using namespace std;
 
@@ -117,6 +118,12 @@ void Session::reply(uint8_t code, uint16_t port)
 void Session::handle(boost::asio::ip::tcp::endpoint endpoint)
 {
     auto self(shared_from_this());
+
+    if (!Firewall::check(endpoint.address().to_string(), this->request.code)) {
+        this->reply(0x5B);
+
+        return;
+    }
 
     switch (this->request.code) {
         case CONSTANT::SOCKS_TYPE::CONNECT:

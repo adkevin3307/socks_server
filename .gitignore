@@ -2,3 +2,4 @@ obj/
 bin/
 /socks_server
 *.cgi
+socks.conf
