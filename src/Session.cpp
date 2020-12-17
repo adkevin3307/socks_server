@@ -185,14 +185,14 @@ void Session::pipe_socket(size_t id, boost::asio::ip::tcp::socket& read, boost::
                 if (!error_code) {
                     this->pipe_socket(id, read, write);
                 }
-                else {
+                else if (error_code != boost::asio::error::operation_aborted) {
                     cerr << "Session pipe write error: " << error_code.message() << '\n';
                 }
             });
         }
         else if (error_code == boost::asio::error::eof) {
-            write.close();
-            read.close();
+            boost::system::error_code trash;
+            read.shutdown(boost::asio::ip::tcp::socket::shutdown_both, trash);
         }
         else {
             cerr << "Session pipe read error: " << error_code.message() << '\n';
