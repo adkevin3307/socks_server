@@ -135,22 +135,34 @@ void Session::handle(boost::asio::ip::tcp::endpoint endpoint)
                     this->pipe_socket(1, this->_client_socket, this->_server_socket);
                 }
                 else {
+                    this->reply(0x5B);
                     cerr << "Session connect error: " << error_code.message() << '\n';
                 }
             });
 
             break;
         case CONSTANT::SOCKS_TYPE::BIND:
-            this->reply(0x5A, this->_acceptor.local_endpoint().port());
+            if (this->_acceptor.is_open()) {
+                this->reply(0x5A, this->_acceptor.local_endpoint().port());
+            }
+            else {
+                this->reply(0x5B);
+            }
 
-            this->_acceptor.async_accept(this->_client_socket, [this, self](const boost::system::error_code& error_code) {
+            this->_acceptor.async_accept(this->_client_socket, [this, self, endpoint](const boost::system::error_code& error_code) {
                 if (!error_code) {
-                    this->reply(0x5A, this->_acceptor.local_endpoint().port());
+                    if (this->_acceptor.is_open() && this->_client_socket.remote_endpoint().address() == endpoint.address()) {
+                        this->reply(0x5A, this->_acceptor.local_endpoint().port());
 
-                    this->pipe_socket(0, this->_server_socket, this->_client_socket);
-                    this->pipe_socket(1, this->_client_socket, this->_server_socket);
+                        this->pipe_socket(0, this->_server_socket, this->_client_socket);
+                        this->pipe_socket(1, this->_client_socket, this->_server_socket);
+                    }
+                    else {
+                        this->reply(0x5B);
+                    }
                 }
                 else {
+                    this->reply(0x5B);
                     cerr << "Session bind error: " << error_code.message() << '\n';
                 }
             });
