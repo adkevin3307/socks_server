@@ -192,7 +192,9 @@ void Session::pipe_socket(size_t id, boost::asio::ip::tcp::socket& read, boost::
         }
         else if (error_code == boost::asio::error::eof) {
             boost::system::error_code trash;
+
             read.shutdown(boost::asio::ip::tcp::socket::shutdown_both, trash);
+            write.shutdown(boost::asio::ip::tcp::socket::shutdown_both, trash);
         }
         else {
             cerr << "Session pipe read error: " << error_code.message() << '\n';
