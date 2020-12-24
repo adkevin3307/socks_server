@@ -78,7 +78,7 @@ void Session::resolve_host()
         case CONSTANT::SOCKS_MODE::SOCKS4A: {
             auto self(shared_from_this());
 
-            boost::asio::ip::tcp::resolver::query query(this->request.domain_name);
+            boost::asio::ip::tcp::resolver::query query(this->request.domain_name, to_string(this->request.port));
             this->_resolver.async_resolve(query, [this, self](const boost::system::error_code& error_code, boost::asio::ip::tcp::resolver::iterator it) {
                 if (!error_code) {
                     auto endpoint = it->endpoint();
